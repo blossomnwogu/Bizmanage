@@ -1,0 +1,23 @@
+:root {
+  --bg: #FAF7F7;
+  --background: #FAF7F7;
+  --surface: #FFFFFF;
+  --text: #2E2528;
+  --muted-text: #6B6265;
+  --border: #E8E1E2;
+  --primary: #DCB4BC;
+  --status: #A3B19B;
+  --sidebar: #2E2528;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1516;
+  --background: #1A1516;
+  --surface: #2A2224;
+  --text: #F7ECEF;
+  --muted-text: #C9BEC1;
+  --border: #3A3033;
+  --primary: #DCB4BC;
+  --status: #A3B19B;
+  --sidebar: #2A2224;
+}
