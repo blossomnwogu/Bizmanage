@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import ThemeToggle from "../components/ThemeToggle";
 import { loginUser } from "../api/api";
 import { useAuth } from "../context/AuthContext";
@@ -14,23 +15,22 @@ function Login() {
   });
 
   const [errors, setErrors] = useState({});
-
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((current) => ({
+      ...current,
       [name]: value,
-    });
-    
-    //Clear the error for this field when the user starts typing
-  setErrors((current) => ({
-    ...current,
-    [name]: "",
-    general: "",
-  }));
+    }));
+
+    setErrors((current) => ({
+      ...current,
+      [name]: "",
+      general: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -52,7 +52,6 @@ function Login() {
 
     setErrors(newErrors);
 
-    // Stop if validation failed
     if (Object.keys(newErrors).length > 0) {
       return;
     }
@@ -65,14 +64,15 @@ function Login() {
         password: formData.password,
       });
 
-      //Save token and user through AuthContext
+      // Save token and user through AuthContext
       login(data);
 
-      //Go to the dashboard
+      // Go to dashboard
       navigate("/overview");
     } catch (error) {
       setErrors({
-        general: error.message || "Login failed. Please try again.",
+        general:
+          error.message || "Login failed. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -80,39 +80,56 @@ function Login() {
   };
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] px-6 py-8 text-[var(--text)]">
-      {/* Top navigation */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-[var(--text)]"
-        >
-          BizManage
-        </Link>
+    <main
+      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat text-[#30292c]"
+      style={{
+        backgroundImage: "url('/images/Login.png')",
+      }}
+    >
+      {/* Soft overlay for readability */}
+      <div className="absolute inset-0 bg-white/5" />
 
+      {/* Theme toggle */}
+      <div className="absolute right-6 top-6 z-30">
         <ThemeToggle />
       </div>
 
-      {/* Login area */}
-      <section className="mx-auto flex min-h-[calc(100vh-100px)] max-w-md items-center">
-        <div className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-sm">
+      {/* Login content */}
+      <section className="relative z-10 flex min-h-screen items-center justify-end px-5 py-8 sm:px-8 lg:pr-[14%]">
+        <div
+          className="
+            w-full
+            max-w-[555px]
+            rounded-[20px]
+            border border-white/60
+            bg-white/25
+            p-7
+            shadow-[0_20px_60px_rgba(0,0,0,0.12)]
+            backdrop-blur-md
+            sm:p-9
+            md:p-10
+          "
+        >
+          {/* Heading */}
+          <div>
+            <p className="text-sm font-bold tracking-[0.12em] text-[#899575]">
+              WELCOME BACK
+            </p>
 
-          <p className="font-semibold tracking-widest text-[var(--status)]">
-            WELCOME BACK
-          </p>
+            <h1 className="mt-2 text-3xl font-bold leading-tight text-[#30292c] sm:text-[38px]">
+              Login to your account
+            </h1>
 
-          <h1 className="mt-3 text-3xl font-bold">
-            Login to your account
-          </h1>
+            <p className="mt-3 max-w-[470px] text-base leading-7 text-[#777275] sm:text-lg">
+              Enter your details to continue managing your business.
+            </p>
+          </div>
 
-          <p className="mt-3 leading-7 text-[var(--muted-text)]">
-            Enter your details to continue managing your business.
-          </p>
-
-          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             {/* General error */}
             {errors.general && (
-              <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-600">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {errors.general}
               </div>
             )}
@@ -121,23 +138,60 @@ function Login() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block font-medium"
+                className="mb-2 block text-base font-semibold text-[#30292c]"
               >
                 Email Address
               </label>
 
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
-              />
+              <div className="relative">
+                {/* Email icon */}
+                <svg
+                  className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#30292c]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <rect
+                    x="3"
+                    y="5"
+                    width="18"
+                    height="14"
+                    rx="2"
+                  />
+                  <path d="m3 7 9 6 9-6" />
+                </svg>
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className="
+                    w-full
+                    rounded-xl
+                    border border-[#d8d2d2]
+                    bg-white/70
+                    py-4
+                    pl-14
+                    pr-4
+                    text-base
+                    text-[#30292c]
+                    outline-none
+                    transition
+                    placeholder:text-[#999395]
+                    focus:border-[#899575]
+                    focus:ring-2
+                    focus:ring-[#899575]/20
+                  "
+                />
+              </div>
 
               {errors.email && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1.5 text-sm text-red-500">
                   {errors.email}
                 </p>
               )}
@@ -148,67 +202,170 @@ function Login() {
               <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="font-medium"
+                  className="text-base font-semibold text-[#30292c]"
                 >
                   Password
                 </label>
-
-                <a
-                  href="#forgot-password"
-                  className="text-sm font-medium text-[var(--primary)]"
-                >
-                  Forgot password?
-                </a>
               </div>
 
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
-              />
+              <div className="relative">
+                {/* Lock icon */}
+                <svg
+                  className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#30292c]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <rect
+                    x="5"
+                    y="10"
+                    width="14"
+                    height="10"
+                    rx="2"
+                  />
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="
+                    w-full
+                    rounded-xl
+                    border border-[#d8d2d2]
+                    bg-white/70
+                    py-4
+                    pl-14
+                    pr-14
+                    text-base
+                    text-[#30292c]
+                    outline-none
+                    transition
+                    placeholder:text-[#999395]
+                    focus:border-[#899575]
+                    focus:ring-2
+                    focus:ring-[#899575]/20
+                  "
+                />
+
+                {/* Show password */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword((current) => !current)
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-[#30292c] transition hover:text-[#899575]"
+                >
+                  {showPassword ? (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M3 3l18 18" />
+                      <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                      <path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 8.5 4 9.5 6-.4.8-1.4 2.2-3 3.5" />
+                      <path d="M6.2 6.2C4.3 7.5 2.9 9.3 2.5 10c1 2 4.5 6 9.5 6 1 0 1.9-.2 2.8-.5" />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                      <circle cx="12" cy="12" r="2.5" />
+                    </svg>
+                  )}
+                </button>
+              </div>
 
               {errors.password && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1.5 text-sm text-red-500">
                   {errors.password}
                 </p>
               )}
             </div>
 
-            {/* Remember me */}
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4"
-              />
+            {/* Remember + Forgot password */}
+            <div className="flex items-center justify-between gap-4">
+              <label className="flex cursor-pointer items-center gap-3 text-sm text-[#555053]">
+                <input
+                  type="checkbox"
+                  className="
+                    h-5
+                    w-5
+                    cursor-pointer
+                    rounded
+                    border-[#d8d2d2]
+                    accent-[#d58f92]
+                  "
+                />
 
-              Remember me
-            </label>
+                <span>Remember me</span>
+              </label>
+
+              <a
+                href="#forgot-password"
+                className="text-sm font-medium text-[#899575] transition hover:underline"
+              >
+                Forgot password?
+              </a>
+            </div>
 
             {/* Login button */}
             <button
               type="submit"
-              className="w-full rounded-lg bg-[var(--primary)] px-4 py-3 font-semibold text-[#2E2528] transition hover:opacity-90"
+              disabled={loading}
+              className="
+                w-full
+                rounded-full
+                bg-[#30292c]
+                px-6
+                py-4
+                text-base
+                font-bold
+                tracking-wide
+                text-white
+                shadow-sm
+                transition
+                hover:bg-[#40373b]
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "SIGNING IN..." : "SIGN IN"}
             </button>
-
           </form>
 
-          {/* Signup link */}
-          <p className="mt-6 text-center text-[var(--muted-text)]">
+          {/* Divider */}
+          <div className="my-7 h-px bg-[#ded9d9]" />
+
+          {/* Signup */}
+          <p className="text-center text-sm text-[#777275] sm:text-base">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-semibold text-[var(--primary)]"
+              className="font-semibold text-[#d58f92] transition hover:underline"
             >
-              Create an account
+              Sign Up
             </Link>
           </p>
-
         </div>
       </section>
     </main>

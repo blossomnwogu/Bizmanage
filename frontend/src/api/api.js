@@ -5,27 +5,55 @@ const API_URL =
 async function request(path, options = {}) {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
+  let response;
 
-    headers: {
-      "Content-Type": "application/json",
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...options,
 
-      ...(token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : {}),
+      headers: {
+        "Content-Type": "application/json",
 
-      ...(options.headers || {}),
-    },
-  });
+        ...(token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {}),
+
+        ...(options.headers || {}),
+      },
+    });
+  } catch (error) {
+    console.error("API request failed:", error);
+
+    throw new Error(
+      "Unable to connect to the server. Please check your connection and try again."
+    );
+  }
 
   const data = await response.json().catch(() => ({}));
 
+  /* =========================
+     AUTHENTICATION ERROR
+  ========================= */
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+
+    throw new Error(
+      data.message ||
+        "Your session has expired. Please log in again."
+    );
+  }
+
+  /* =========================
+     OTHER API ERRORS
+  ========================= */
+
   if (!response.ok) {
     throw new Error(
-      data.message || "Something went wrong"
+      data.message ||
+        "Something went wrong. Please try again."
     );
   }
 
